@@ -32,6 +32,7 @@
         justify-content: space-between;
         height: 100%;
         background-color: lightslategrey;
+        /* background-image: linear-gradient(darkslategray 10%, lightslategrey 40%, white 90%); */
         border-radius: 6px;
     }
 
