@@ -29,7 +29,8 @@ export default {
 			}),
 			resolve({
 				browser: true,
-				dedupe: ['svelte']
+				dedupe: ['svelte'],
+				mainFields: ['main', 'module']
 			}),
 			commonjs(),
 

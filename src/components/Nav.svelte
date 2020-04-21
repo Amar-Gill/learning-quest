@@ -1,5 +1,5 @@
 <script>
-
+    export let auth;
 </script>
 
 <nav>
@@ -14,7 +14,8 @@
             <a href="add">add</a>
         </li>
         <li>
-            log-in
+            <button  on:click={() => auth.signOut()}>log-out</button>
+            
         </li>
 
     </ul>
