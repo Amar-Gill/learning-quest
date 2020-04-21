@@ -20,10 +20,39 @@
 	// https://github.com/codediodeio/sveltefire/issues/4
 	let globalFirebase;
 
+
 	onMount(() => {
 		globalFirebase = firebase;
 		if (!firebase.apps.length) {
 			firebase.initializeApp(firebaseConfig);
+
+			// FirebaseUI config.
+			var uiConfig = {
+				signInSuccessUrl: '/',
+				signInOptions: [
+					// Leave the lines as is for the providers you want to offer your users.
+					firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+					// firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+					// firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+					// firebase.auth.GithubAuthProvider.PROVIDER_ID,
+					// firebase.auth.EmailAuthProvider.PROVIDER_ID,
+					// firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+					firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+				],
+				// tosUrl and privacyPolicyUrl accept either url string or a callback
+				// function.
+				// Terms of service url/callback.
+				tosUrl: '<your-tos-url>',
+				// Privacy policy url/callback.
+				privacyPolicyUrl: function () {
+					window.location.assign('<your-privacy-policy-url>');
+				}
+			};
+
+			// Initialize the FirebaseUI Widget using Firebase.
+			var ui = new firebaseui.auth.AuthUI(firebase.auth());
+			// The start method will wait until the DOM is loaded.
+			ui.start('#firebaseui-auth-container', uiConfig);
 		}
 	});
 </script>
@@ -39,10 +68,8 @@
 		</main>
 
 		<div slot="signed-out">
-			<button on:click={() => auth.signInAnonymously()}>
-			  Sign In Anonymously
-			</button>
-		  </div>
+			<section id="firebaseui-auth-container"></section>
+		</div>
 	</User>
 </FirebaseApp>
 {/if}
@@ -58,14 +85,12 @@
 		position: fixed;
 	}
 
-	div {
-		height: 4rem;
-		width: 9rem;
+	section {
+		max-width: 35vw;
 		border: solid black 2px;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
 		margin:auto;
-		margin-top: 40vh;
+		margin-top: 30vh;
+		border-radius: 8px;
+		box-shadow: 5px 10px;
 	}
 </style>
