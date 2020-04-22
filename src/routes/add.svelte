@@ -40,6 +40,7 @@
                     uid: user.uid,
                     createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
                     lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+                    completedGames: []
                   });
 
                 t = 0;
@@ -200,7 +201,7 @@
             // update report doc for user
             ref.update({
                 completedGames: firebase.firestore.FieldValue.arrayUnion({
-                    game: 'add',
+                    game: 'Basic Addition',
                     time: t,
                     completedAt: firebase.firestore.Timestamp.fromDate(new Date())
                 }),

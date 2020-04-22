@@ -38,7 +38,7 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
-<h1>Learning-Quest</h1>
+<h1>Learning-Quest 0.1.0</h1>
 <div>
 	<figure id='fig'>
 		<img alt='ruby-light' src='images/Carbuncle.png'>
