@@ -45,7 +45,7 @@
 				tosUrl: '<your-tos-url>',
 				// Privacy policy url/callback.
 				privacyPolicyUrl: function () {
-					window.location.assign('<your-privacy-policy-url>');
+					window.location.assign('https://personal-page.amar-gill.now.sh/');
 				}
 			};
 
