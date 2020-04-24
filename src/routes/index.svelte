@@ -5,7 +5,6 @@
 		height: 100vh;
 		background-image: linear-gradient(black 20%, darkslategrey 40%, white 90%);
 		border-radius: 6px;
-		
 	}
 
 	img {
@@ -38,23 +37,12 @@
 <svelte:head>
 	<title>Home</title>
 </svelte:head>
+
 <h1>Learning-Quest 0.1.0</h1>
+
 <div>
 	<figure id='fig'>
 		<img alt='ruby-light' src='images/Carbuncle.png'>
 		<!-- <figcaption>Carbuncle casts Ruby Light</figcaption> -->
 	</figure>
 </div>
-
-<script>
-	console.log(document.childElementCount)
-	console.log(document.children.item)
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		const fig = document.getElementById('fig');
-		console.log('ADD CLASS FOR ANIMATION =]')
-		// fig.style.marginLeft = 'auto';
-		// fig.style.marginRight = 0;
-	})
-</script>

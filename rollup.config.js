@@ -32,7 +32,13 @@ export default {
 				dedupe: ['svelte'],
 				mainFields: ['main', 'module']
 			}),
-			commonjs(),
+			commonjs({
+				// left-hand side can be an absolute path, a path
+				// relative to the current directory, or the name
+				// of a module in node_modules
+				// 'node_modules/idb/build/idb.js': ['openDb'],
+				// 'node_modules/firebase/dist/index.cjs.js': ['initalizeApp', 'firestore', 'auth', 'analytics', 'performance'],
+			}),
 
 			legacy && babel({
 				extensions: ['.js', '.mjs', '.html', '.svelte'],

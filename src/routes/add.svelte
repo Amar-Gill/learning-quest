@@ -4,51 +4,32 @@
 
 
 <User let:auth let:user>
-    <Doc path={`reports/${user.uid}`} let:data let:ref log>
-        <!-- position: fixed  -->
-        <input type="button" value="Play again?" id="replay-btn" on:click|preventDefault={replayGame} />
+    <!-- position: fixed  -->
+    <input type="button" value="Play again?" id="replay-btn" on:click|preventDefault={replayGame} />
 
-        <h5><time>{t}</time></h5>
+    <h5><time>{t}</time></h5>
 
-        <aside id='pop-up'>
-            <h6>~ NICE WORK ~</h6>
-            <img src='/images/pbjt.gif' alt='gif' />
-        </aside>
-        <!-- position != fixed  -->
+    <aside id='pop-up'>
+        <h6>~ NICE WORK ~</h6>
+        <img src='/images/pbjt.gif' alt='gif' />
+    </aside>
+    <!-- position != fixed  -->
 
-        <div>
-            <h1>{prompt}</h1>
+    <div>
+        <h1>{prompt}</h1>
 
-            <GridBox cards={a} />
-            <section>
-                <img src="/images/plus-sign.png" alt="plus-sign" />
-            </section>
-            <GridBox cards={b} />
+        <GridBox cards={a} />
+        <section>
+            <img src="/images/plus-sign.png" alt="plus-sign" />
+        </section>
+        <GridBox cards={b} />
 
-            <footer>
-                {#each options as option}
-                    <input class="answer-btn" type="button" value={option} on:click|preventDefault="{(e) => validateAnswer(e,ref)}">
+        <footer>
+            {#each options as option}
+                    <input class="answer-btn" type="button" value={option} on:click|preventDefault="{(e) => validateAnswer(e,user)}">
                 {/each}
             </footer>
         </div>
-        <span slot="loading">Loading...</span>
-        <span slot="fallback">
-            Initialize report document for user: {user.uid}
-            <button
-            on:click="{() => {
-                ref.set({
-                    uid: user.uid,
-                    createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-                    lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
-                    completedGames: []
-                  });
-
-                t = 0;
-            }}">
-            Create Document
-          </button>
-        </span>
-    </Doc>
 </User>
  
 
@@ -150,10 +131,12 @@
 </style>
 
 <script>
-    import { onMount, tick, beforeUpdate } from 'svelte';
+    import { onMount, tick, beforeUpdate, getContext } from 'svelte';
     import { User, Doc } from 'sveltefire';
     import GridBox from '../components/GridBox.svelte';
 
+    const db = getContext('firebase').firestore();
+    
     // initialize game prompt and clock for user
     let prompt = "Add up the bananas!"
 
@@ -194,19 +177,22 @@
     }
 
     // validate answer function
-    function validateAnswer(e, ref) {
+    function validateAnswer(e, user) {
         if (e.target.value == answer) {
             prompt = `${e.target.value} is correct!`;
 
-            // update report doc for user
-            ref.update({
+            db.collection("reports").doc(user.uid).set({
+                uid: user.uid,
+                // TODO - use cloud function to handle createdAt field:
+                // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
+                // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
+                lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
                 completedGames: firebase.firestore.FieldValue.arrayUnion({
                     game: 'Basic Addition',
                     time: t,
                     completedAt: firebase.firestore.Timestamp.fromDate(new Date())
                 }),
-                lastActivity: firebase.firestore.Timestamp.fromDate(new Date())
-            })
+            }, { merge: true });
 
             console.log(t);
 

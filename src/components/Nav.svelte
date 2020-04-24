@@ -14,7 +14,7 @@
             <a href="add">add</a>
         </li>
         <li>
-            <button on:click={()=> auth.signOut()}>log-out</button>
+            <button on:click|preventDefault="{()=> auth.signOut().then(() => console.log('user signed out'))}">log-out</button>
 
         </li>
 
