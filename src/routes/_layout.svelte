@@ -54,17 +54,4 @@
 		width: calc(100vw - 5rem);
 		position: fixed;
 	}
-<<<<<<< HEAD
 </style>
-=======
-
-	section {
-		max-width: 35vw;
-		border: solid black 2px;
-		margin:auto;
-		margin-top: 30vh;
-		border-radius: 8px;
-		box-shadow: 5px 10px;
-	}
-</style>
->>>>>>> 85450ca7fb23415e19331b9c92826960ede69cca
