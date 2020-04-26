@@ -1,5 +1,10 @@
 <script>
     export let auth;
+
+    let signOut = function () {
+        // sign out of firebase auth instance
+        auth.signOut().then(() => console.log('User signed out'));
+    };
 </script>
 
 <nav>
@@ -14,10 +19,12 @@
             <a href="add">add</a>
         </li>
         <li>
-            <button on:click|preventDefault="{()=> auth.signOut().then(() => console.log('user signed out'))}">log-out</button>
-
+            <button on:click|preventDefault="{
+                    signOut
+                }">
+                log-out
+            </button>
         </li>
-
     </ul>
 
 </nav>
@@ -64,7 +71,7 @@
     /* selected link */
     a:active {
         font-weight: bolder;
-        color:blueviolet;
+        color: blueviolet;
     }
 
     button {

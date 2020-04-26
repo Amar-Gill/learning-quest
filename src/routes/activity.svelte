@@ -14,7 +14,7 @@
 		<section>
 			<Doc path={`reports/${user.uid}`} let:data let:ref log>
 				{#each data.completedGames as game}
-				<aside>
+				<aside class='lazy'>
 					<p>Learning Exercise: {game.game}</p>
 					<ul>
 						<li>Completed: {game.completedAt.toDate()}</li>

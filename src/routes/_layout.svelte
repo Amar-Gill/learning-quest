@@ -1,7 +1,7 @@
 <script>
+	import { onMount } from 'svelte';
 	import Nav from '../components/Nav.svelte';
 	import FirebaseAuthContainer from '../components/FirebaseAuthContainer.svelte';
-	import { onMount } from 'svelte';
 	import { FirebaseApp, User } from "sveltefire";
 
 	const firebaseConfig = {
