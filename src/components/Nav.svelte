@@ -10,13 +10,13 @@
 <nav>
     <ul>
         <li>
-            <a href=".">home</a>
+            <a href="."><i class="fas fa-house-user fa-3x"></i></a>
         </li>
         <li>
-            <a href="activity">activity</a>
+            <a href="activity"><i class="far fa-chart-bar fa-3x"></i></a>
         </li>
         <li>
-            <a href="games">games</a>
+            <a href="games"><i class="fas fa-gamepad fa-3x"></i></a>
         </li>
         <li>
             <button on:click|preventDefault="{
@@ -51,6 +51,8 @@
 
     li {
         width: 100%;
+        padding-bottom: .25rem;
+        padding-top: .25rem;
         /* color: lightgoldenrodyellow; */
     }
 
@@ -68,10 +70,15 @@
         color: lightgoldenrodyellow;
     }
 
-    /* selected link */
-    a:active {
-        font-weight: bolder;
-        color: blueviolet;
+    a:hover {
+        filter: grayscale(0%) opacity(1);
+    }
+
+    a {
+        display: flex;
+        justify-content: center;
+        text-decoration: none;
+        filter: grayscale(100%) opacity(0.7);
     }
 
     button {
