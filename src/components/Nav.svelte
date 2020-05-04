@@ -9,15 +9,28 @@
 
 <nav>
     <ul>
+
         <li>
-            <a href="."><i class="fas fa-house-user fa-3x"></i></a>
+            <a href=".">
+                <i class="fas fa-house-user fa-3x"></i>
+                <span>home</span>
+            </a>
         </li>
+
         <li>
-            <a href="activity"><i class="far fa-chart-bar fa-3x"></i></a>
+            <a href="activity">
+                <i class="far fa-chart-bar fa-3x"></i>
+                <span>activity</span>
+            </a>
         </li>
+
         <li>
-            <a href="games"><i class="fas fa-gamepad fa-3x"></i></a>
+            <a href="games">
+                <i class="fas fa-gamepad fa-3x"></i>
+                <span>games</span>
+            </a>
         </li>
+
         <li>
             <button on:click|preventDefault="{
                     signOut
@@ -25,11 +38,13 @@
                 log-out
             </button>
         </li>
+
     </ul>
 
 </nav>
 
 <style>
+
     /* TODO - refactor for media queries */
     nav {
         position: fixed;
@@ -37,6 +52,7 @@
         top: 0;
         width: 5rem;
         height: 100vh;
+        z-index: 30;
     }
 
     ul {
@@ -53,11 +69,45 @@
         width: 100%;
         padding-bottom: .25rem;
         padding-top: .25rem;
-        /* color: lightgoldenrodyellow; */
+        /* see tooltip tutorial: https://www.w3schools.com/css/css_tooltip.asp */
+        position: relative;
     }
 
     li:last-child {
         margin-top: auto;
+    }
+
+    /* see tooltip tutorial: https://www.w3schools.com/css/css_tooltip.asp */
+    li span {
+        visibility: hidden;
+        width: 4rem;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+        top: .25rem;
+        left: 105%;
+    }
+
+    li:hover span {
+        visibility: visible;
+    }
+
+    li span::after {
+        content: " ";
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        /* To the left of the tooltip */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent black transparent transparent;
     }
 
     /* unvisited link */
