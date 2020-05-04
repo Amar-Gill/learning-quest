@@ -2,7 +2,6 @@
     <title>Add</title>
 </svelte:head>
 
-
 <User let:auth let:user>
     <!-- position: fixed  -->
     <input type="button" value="Play again?" id="replay-btn" on:click|preventDefault={replayGame} />
@@ -32,7 +31,6 @@
         </div>
 </User>
  
-
 <style>
     div {
         display: flex;
@@ -133,7 +131,7 @@
 <script>
     import { onMount, tick, beforeUpdate, getContext } from 'svelte';
     import { User, Doc } from 'sveltefire';
-    import GridBox from '../components/GridBox.svelte';
+    import GridBox from '../../components/GridBox.svelte';
 
     const db = getContext('firebase').firestore();
     

@@ -16,7 +16,7 @@
             <a href="activity">activity</a>
         </li>
         <li>
-            <a href="add">add</a>
+            <a href="games">games</a>
         </li>
         <li>
             <button on:click|preventDefault="{
