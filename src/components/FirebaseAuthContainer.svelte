@@ -31,7 +31,7 @@
         tosUrl: '<your-tos-url>',
         // Privacy policy url/callback.
         privacyPolicyUrl: function () {
-            window.location.assign('https://personal-page.amar-gill.now.sh/');
+            window.location.assign("https://amar-gill.now.sh/privacy_policy");
         }
     };
 
@@ -49,7 +49,7 @@
 
 </script>
 
-<div id="firebaseui-auth-container"></div>
+    <div id="firebaseui-auth-container"></div>
 
 <style>
     div {
