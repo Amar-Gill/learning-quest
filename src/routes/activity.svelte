@@ -30,8 +30,8 @@
 					on:click="{() => {
 						ref.set({
 							uid: user.uid,
-							createdAt: firebase.firestore.Timestamp.fromDate(new Date()),
-							lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+							createdAt: window.firebase.firestore.Timestamp.fromDate(new Date()),
+							lastActivity: window.firebase.firestore.Timestamp.fromDate(new Date()),
 							completedGames: []
 						  });
 					}}">

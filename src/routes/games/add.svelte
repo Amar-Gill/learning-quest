@@ -133,7 +133,7 @@
     import { User, Doc } from 'sveltefire';
     import GridBox from '../../components/GridBox.svelte';
 
-    const db = getContext('firebase').firestore();
+    const db = getContext('firebase').getFirebase().firestore();
     
     // initialize game prompt and clock for user
     let prompt = "Add up the bananas!"
