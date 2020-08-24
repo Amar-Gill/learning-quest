@@ -36,7 +36,7 @@
 
   @media only screen and (max-width: 834px) {
 	  div {
-		  padding-left: .5rem;
+		  padding-left: 0;
 	  }
 
 	  section {

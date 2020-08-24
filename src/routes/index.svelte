@@ -2,6 +2,16 @@
   a, a:visited {
     color: var(--comp-4);
   }
+
+  div {
+    padding-left: 2rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    div {
+      padding-left: 0;
+    }
+  }
 </style>
 
 <div>
