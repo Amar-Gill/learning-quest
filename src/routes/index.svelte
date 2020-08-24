@@ -1,13 +1,19 @@
+<style>
+  a, a:visited {
+    color: var(--comp-4);
+  }
+</style>
+
 <div>
 
-  <h1>Learning Quest 0.1.0</h1>
+  <h2>Learning Quest 0.1.0</h2>
 
   <p>
     This is an online education platform for children between the ages of 5-10.
   </p>
   <p>
-    The learning happens by playing various games which are designed to teach
-    children arithmetic and logic.
+    The learning happens through playing various games designed to teach
+    arithmetic and logic.
   </p>
 
   <h2>How to Play</h2>
