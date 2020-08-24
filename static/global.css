@@ -1,6 +1,17 @@
 :root {
     font-size: 16px;
     font-family: 'Open Sans';
+    --hue-1: #2f4f4f;
+    --hue-2: #476c6c;
+    --hue-3: #608b8b;
+    --hue-4: #7aabaa;
+    --hue-5: #95cccb;
+    --hue-6: #b1eeed;
+    --comp-1: #267057;
+    --comp-2: #538d43;
+    --comp-3: #9ea218;
+    --comp-4: #ffa600;
+    --text-1: #fafad2;
 }
 
 /* apply a natural box layout model to all elements, but allowing components to change */

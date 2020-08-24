@@ -11,7 +11,7 @@
   /* TODO - refactor for media queries */
   nav {
     position: fixed;
-    background-color: darkslategrey;
+    background-color: var(--hue-1);
     z-index: 30;
   }
 
@@ -56,12 +56,12 @@
 
   /* unvisited link */
   a:link {
-    color: lightgoldenrodyellow;
+    color: var(--text-1);
   }
 
   /* visited link */
   a:visited {
-    color: lightgoldenrodyellow;
+    color: var(--text-1);
   }
 
   a:hover {
@@ -76,9 +76,9 @@
   }
 
   button {
-    color: darkslategray;
+    color: var(--hue-1);
     border-radius: 5px;
-    background-color: lightgoldenrodyellow;
+    background-color: var(--text-1);
     font-weight: bold;
     margin-left: 0.5rem;
   }
