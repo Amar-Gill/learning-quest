@@ -55,7 +55,7 @@
 
     <h3>Game Reports</h3>
     <section>
-      <Doc path={`reports/${user.uid}`} let:data let:ref log>
+      <Doc path={`reports/${user.uid}`} let:data let:ref>
         {#each data.completedGames as game}
           <aside class="lazy">
             <p>Learning Exercise: {game.game}</p>
