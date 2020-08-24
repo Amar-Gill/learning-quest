@@ -4,7 +4,7 @@ Interactive learning game for young children built using [Sapper](https://sapper
 
 https://learning-quest.now.sh/
 
-Implements Firebase authentication and Firestore to record user progress.
+Implements Firebase authentication and Cloud Firestore to record user progress.
 
 Available games:
 - addition

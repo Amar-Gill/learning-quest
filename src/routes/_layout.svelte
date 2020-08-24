@@ -14,6 +14,16 @@
     width: calc(100vw - 5rem);
     position: fixed;
   }
+
+  /* small screens */
+  @media only screen and (max-width: 600px) {
+    main {
+      margin-left: 0;
+      padding: 0;
+      width: 100vw;
+      height: calc(100vh - 5rem);
+    }
+  }
 </style>
 
 <!-- defaults to firebase={window.firebase} -->
