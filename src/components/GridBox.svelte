@@ -37,4 +37,15 @@
         background-position: center;
         background-repeat: no-repeat;
     }
+
+    @media only screen and (max-width: 600px) {
+        section {
+            gap: .6rem;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        }
+
+        img {
+            height: 80px;
+        }
+    }
 </style>
