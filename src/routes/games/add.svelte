@@ -8,21 +8,19 @@
     .firestore();
 
   // initialize game prompt and clock for user
-  let prompt = "Add up the bananas!";
+  let prompt;
 
   // initialize a and b as random ints between 1 and 10
-  let a = Math.floor(Math.random() * 11);
-  let b = Math.floor(Math.random() * 11);
+  let a;
+  let b;
 
   // initialize game timer
-  let t = 0;
-  let interval = setInterval(() => {
-    t += 1;
-  }, 1000);
+  let t;
+  let interval;
 
   // calculate alternate options in same manner as a and b
-  let alt1 = Math.floor(Math.random() * 11) + Math.floor(Math.random() * 11);
-  let alt2 = Math.floor(Math.random() * 11) + Math.floor(Math.random() * 11);
+  let alt1;
+  let alt2;
 
   // calculate answer
   $: answer = a + b;
@@ -42,7 +40,7 @@
     }
   }
 
-  // validate answer function
+  // called when an answer is selected
   function validateAnswer(e, user) {
     if (e.target.value == answer) {
       prompt = `${e.target.value} is correct!`;
@@ -88,9 +86,8 @@
     }
   }
 
-  // function to validate game data
+  // function to validate if answer and alt values are all different
   async function validateGame() {
-    console.log("validating game");
     // recalculate a and b if they are 0
     while (a == 0) a = Math.floor(Math.random() * 11);
 
@@ -100,36 +97,29 @@
 
     // check that alternate options do not equal answer or each other or 0
     while (alt1 == answer || alt1 == alt2 || alt1 == 0) {
-      console.log(
-        `alt1: ${alt1} alt2: ${alt2} answer: ${answer} - updating alt1`
-      );
       alt1 = Math.floor(Math.random() * 11) + Math.floor(Math.random() * 11);
     }
 
     await tick();
 
     while (alt2 == answer || alt2 == alt1 || alt2 == 0) {
-      console.log(
-        `alt2: ${alt2} alt1: ${alt1} answer: ${answer} - updating alt2`
-      );
       alt2 = Math.floor(Math.random() * 11) + Math.floor(Math.random() * 11);
     }
 
     await tick();
   }
 
-  // TODO - refactor function as initialize game by first removing top level code
-  function replayGame() {
+  async function replayGame() {
     // reset prompt
     prompt = "Add up the bananas!";
 
     // change replay btn display to none
-    const replayBtn = document.getElementById("replay-btn");
-    replayBtn.style.display = "none";
+    const replayBtn = document.getElementById("replay-btn") || null;
+    if (replayBtn) replayBtn.style.display = "none";
 
     // change pop-up display to none to hide from user again
-    const popUp = document.getElementById("pop-up");
-    popUp.style.display = "none";
+    const popUp = document.getElementById("pop-up") || null;
+    if (popUp) popUp.style.display = "none";
 
     // re-enable answer buttons
     const answerBtnsCollection = document.getElementsByClassName("answer-btn");
@@ -153,15 +143,15 @@
       t += 1;
     }, 1000);
 
-    validateGame();
+    await validateGame();
   }
 
   beforeUpdate(() => {
     shuffle(options);
   });
 
-  onMount(() => {
-    validateGame();
+  onMount(async () => {
+    await replayGame();
   });
 </script>
 
