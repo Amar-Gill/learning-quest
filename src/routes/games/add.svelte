@@ -1,7 +1,7 @@
 <script>
   import { onMount, tick, beforeUpdate, getContext } from "svelte";
   import { User, Doc } from "sveltefire";
-  import GridBox from "../../components/GridBox.svelte";
+  import ImageGrid from "../../components/ImageGrid.svelte";
 
   const db = getContext("firebase")
     .getFirebase()
@@ -187,7 +187,7 @@
   }
 
   .answer-btn:disabled {
-      filter: grayscale(100%);
+    filter: grayscale(100%);
   }
 
   h2,
@@ -258,22 +258,22 @@
   }
 
   @media only screen and (max-width: 600px) {
-      aside {
-          bottom: 5rem;
-          right: 0;
-      }
+    aside {
+      bottom: 5rem;
+      right: 0;
+    }
 
-      aside img {
-          /* height: 6rem; */
-      }
+    aside img {
+      /* height: 6rem; */
+    }
 
-      h5 {
-          left: 1rem;
-      }
+    h5 {
+      left: 1rem;
+    }
 
-      #replay-btn {
-          right: .5rem;
-      }
+    #replay-btn {
+      right: 0.5rem;
+    }
   }
 </style>
 
@@ -283,10 +283,9 @@
 
 <User let:auth let:user>
   <!-- position: fixed  -->
-  <button
-    type="button"
-    id="replay-btn"
-    on:click|preventDefault={replayGame} >Play again?</button>
+  <button type="button" id="replay-btn" on:click|preventDefault={replayGame}>
+    Play again?
+  </button>
 
   <h5>
     <time>{t}</time>
@@ -301,11 +300,17 @@
   <div>
     <h2>{prompt}</h2>
 
-    <GridBox cards={a} />
+    <ImageGrid
+      numImages={a}
+      imageSource='/images/banana.png'
+      imageAlt='banana' />
     <section>
       <img src="/images/plus-sign.png" alt="plus-sign" />
     </section>
-    <GridBox cards={b} />
+    <ImageGrid
+      numImages={b}
+      imageSource='/images/banana.png'
+      imageAlt='banana' />
 
     <footer>
       {#each options as option}
