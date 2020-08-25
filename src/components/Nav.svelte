@@ -95,6 +95,10 @@
       ul {
           flex-direction: row;
       }
+
+      li:last-child {
+        display: none;
+      }
   }
 
   /* large screen */
