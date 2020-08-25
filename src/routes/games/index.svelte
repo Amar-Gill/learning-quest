@@ -36,4 +36,5 @@
   <h2>Games</h2>
 
   <a href="games/add" alt="add">Basic Addition</a>
+  <a href="games/fraction" alt="fractions">Fractions</a>
 </div>
