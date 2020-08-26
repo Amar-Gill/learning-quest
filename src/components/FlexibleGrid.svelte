@@ -1,33 +1,31 @@
 <script>
-  import { onMount } from "svelte";
-
-  const gridSize = 8;
+  export let gridSize;
 
   $: itemTotal = gridSize * gridSize;
 
   let numSelected = 0;
+
+  let windowWidth;
+
+  $: gridColumnWidth = windowWidth < 600 ? "55px" : "75px";
 
   const handleClick = function() {
     this.classList.contains("active") ? numSelected-- : numSelected++;
     this.classList.toggle("active");
   };
 
-  onMount(() => {
-    const container = document.getElementById("container");
-
-    container.style.gridTemplateColumns = "1fr ".repeat(gridSize);
-  });
 </script>
 
 <style>
   div {
     display: grid;
     gap: 0rem;
-    width: 60%;
+    margin: auto;
+    grid-template-columns: var(--columns);
   }
 
   section {
-    height: 40px;
+    height: 75px;
     background-color: white;
     border: solid black 0.5px;
   }
@@ -37,13 +35,15 @@
   }
 
   @media only screen and (max-width: 600px) {
-    div {
-      width: 90%;
+    section {
+        height: 55px;
     }
   }
 </style>
 
-<div id="container">
+<svelte:window bind:innerWidth={windowWidth}></svelte:window>
+
+<div style="--columns: repeat({gridSize}, {gridColumnWidth} )">
   {#each { length: itemTotal } as gridItem, index}
     <section class:active={false} on:click={handleClick} />
   {/each}
