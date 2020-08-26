@@ -91,6 +91,9 @@
   ];
 
   function resetGame() {
+    const answerBtn = document.getElementById("answer-btn") || null;
+    answerBtn && (answerBtn.disabled = false);
+
     selectedOption = options[Math.floor(Math.random() * options.length)];
 
     drawingEnabled = true;
@@ -135,7 +138,9 @@
 
 <div>
   <header>
+    <button>Back</button>
     <h2>{prompt}</h2>
+    <button on:click|preventDefault={resetGame}>Play again?</button>
   </header>
 
   <FlexibleGrid
@@ -143,6 +148,7 @@
     gridSize={selectedOption.gridSize} 
     {drawingEnabled} />
   <footer>
-    <button on:click|preventDefault={handleAnswerSubmit}>SUBMIT ANSWER</button>
+    <button id="answer-btn" on:click|preventDefault={handleAnswerSubmit}>SUBMIT ANSWER</button>
   </footer>
+  <p>{numSelected}</p>
 </div>

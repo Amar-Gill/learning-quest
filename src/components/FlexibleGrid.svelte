@@ -1,12 +1,12 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, afterUpdate } from "svelte";
   const dispatch = createEventDispatcher();
   export let gridSize;
   export let drawingEnabled;
 
   $: itemTotal = gridSize * gridSize;
 
-  let numSelected = 0;
+  let numSelected;
 
   let windowWidth;
 
@@ -24,9 +24,29 @@
   };
 
   onMount(() => {
+    numSelected = 0;
+
     dispatch("drawevent", {
       numSelected
     });
+  });
+
+  afterUpdate(() => {
+    numSelected = 0;
+
+    dispatch("drawevent", {
+      numSelected
+    });
+
+    if (drawingEnabled) {
+      const gridContainer = document.getElementById("grid-container");
+
+      const nodes = gridContainer.childNodes;
+
+      for (const node of nodes) {
+        node.classList.contains("active") && node.classList.toggle("active");
+      }
+    }
   });
 </script>
 
@@ -57,7 +77,9 @@
 
 <svelte:window bind:innerWidth={windowWidth} />
 
-<div style="--columns: repeat({gridSize}, {gridColumnWidth} )">
+<div
+  id="grid-container"
+  style="--columns: repeat({gridSize}, {gridColumnWidth} )">
   {#each { length: itemTotal } as gridItem, index}
     <section class:active={false} on:click={handleClick} />
   {/each}
