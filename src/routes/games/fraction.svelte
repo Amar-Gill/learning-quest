@@ -1,6 +1,7 @@
 <script>
   import FlexibleGrid from "../../components/FlexibleGrid.svelte";
   import { onMount } from "svelte";
+  import { goto } from "@sapper/app";
 
   let prompt;
 
@@ -94,6 +95,12 @@
     const answerBtn = document.getElementById("answer-btn") || null;
     answerBtn && (answerBtn.disabled = false);
 
+    const replayBtn = document.getElementById("replay-btn") || null;
+    replayBtn && (replayBtn.style.display = "none");
+
+    const backBtn = document.getElementById("back-btn") || null;
+    backBtn && (backBtn.style.display = "none");
+
     selectedOption = options[Math.floor(Math.random() * options.length)];
 
     drawingEnabled = true;
@@ -111,11 +118,17 @@
 
   function handleAnswerSubmit(event) {
     if (numSelected == selectedSolution[1]) {
-      prompt = "HOORAY";
+      prompt = "Right answer!";
       event.target.disabled = true;
-      drawingEnabled=false;
+      drawingEnabled = false;
+
+      const replayBtn = document.getElementById("replay-btn");
+      replayBtn.style.display = "block";
+
+      const backBtn = document.getElementById("back-btn");
+      backBtn.style.display = "block";
     } else {
-      prompt = "Try again dummie. " + prompt;
+      prompt = `Try again. Colour in ${selectedSolution[0]} of the grid!`;
     }
   }
 
@@ -130,6 +143,56 @@
     align-items: center;
     height: 100%;
   }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 90px;
+  }
+
+  header h2 {
+    text-align: center;
+    margin: auto;
+  }
+
+  footer {
+    margin-bottom: 1rem;
+  }
+
+  #replay-btn {
+    display: none;
+    font-size: 1.5rem;
+    font-family: "Comic Sans MS";
+    border-radius: 8px;
+    color: var(--text-1);
+    background-color: var(--hue-1);
+    width: 90px;
+    height: 90px;
+  }
+
+  #back-btn {
+    display: none;
+    font-size: 1.5rem;
+    font-family: "Comic Sans MS";
+    border-radius: 8px;
+    color: var(--text-1);
+    background-color: var(--hue-1);
+    width: 110px;
+    height: 90px;
+  }
+
+  #answer-btn {
+    font-size: 1.5rem;
+    font-family: "Comic Sans MS";
+    border-radius: 8px;
+    color: var(--text-1);
+    background-color: var(--hue-1);
+  }
+
+  #answer-btn:disabled {
+    filter: grayscale(100%);
+  }
 </style>
 
 <svelte:head>
@@ -138,17 +201,22 @@
 
 <div>
   <header>
-    <button>Back</button>
+    <button id="back-btn" on:click={async () => await goto('/games')}>
+      Back to games
+    </button>
     <h2>{prompt}</h2>
-    <button on:click|preventDefault={resetGame}>Play again?</button>
+    <button id="replay-btn" on:click|preventDefault={resetGame}>
+      Play again?
+    </button>
   </header>
 
   <FlexibleGrid
     on:drawevent={handleDrawEvent}
-    gridSize={selectedOption.gridSize} 
+    gridSize={selectedOption.gridSize}
     {drawingEnabled} />
   <footer>
-    <button id="answer-btn" on:click|preventDefault={handleAnswerSubmit}>SUBMIT ANSWER</button>
+    <button id="answer-btn" on:click|preventDefault={handleAnswerSubmit}>
+      Submit Answer
+    </button>
   </footer>
-  <p>{numSelected}</p>
 </div>
