@@ -1,12 +1,16 @@
 <script>
   import FlexibleGrid from "../../components/FlexibleGrid.svelte";
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   let prompt;
+
+  let drawingEnabled;
 
   let selectedOption;
 
   let selectedSolution;
+
+  let numSelected;
 
   const options = [
     {
@@ -89,12 +93,28 @@
   function resetGame() {
     selectedOption = options[Math.floor(Math.random() * options.length)];
 
+    drawingEnabled = true;
+
     const solutions = Object.entries(selectedOption.solutionSpace);
 
     selectedSolution = solutions[Math.floor(Math.random() * solutions.length)];
 
     prompt = `Colour in ${selectedSolution[0]} of the grid!`;
-  };
+  }
+
+  function handleDrawEvent(event) {
+    numSelected = event.detail.numSelected;
+  }
+
+  function handleAnswerSubmit(event) {
+    if (numSelected == selectedSolution[1]) {
+      prompt = "HOORAY";
+      event.target.disabled = true;
+      drawingEnabled=false;
+    } else {
+      prompt = "Try again dummie. " + prompt;
+    }
+  }
 
   resetGame();
 </script>
@@ -118,6 +138,11 @@
     <h2>{prompt}</h2>
   </header>
 
-  <FlexibleGrid gridSize={selectedOption.gridSize} />
-  <footer>answer btns here</footer>
+  <FlexibleGrid
+    on:drawevent={handleDrawEvent}
+    gridSize={selectedOption.gridSize} 
+    {drawingEnabled} />
+  <footer>
+    <button on:click|preventDefault={handleAnswerSubmit}>SUBMIT ANSWER</button>
+  </footer>
 </div>

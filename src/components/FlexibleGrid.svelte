@@ -1,5 +1,8 @@
 <script>
+  import { createEventDispatcher, onMount } from "svelte";
+  const dispatch = createEventDispatcher();
   export let gridSize;
+  export let drawingEnabled;
 
   $: itemTotal = gridSize * gridSize;
 
@@ -10,10 +13,21 @@
   $: gridColumnWidth = windowWidth < 600 ? "55px" : "75px";
 
   const handleClick = function() {
-    this.classList.contains("active") ? numSelected-- : numSelected++;
-    this.classList.toggle("active");
+    if (drawingEnabled) {
+      this.classList.contains("active") ? numSelected-- : numSelected++;
+      this.classList.toggle("active");
+
+      dispatch("drawevent", {
+        numSelected
+      });
+    }
   };
 
+  onMount(() => {
+    dispatch("drawevent", {
+      numSelected
+    });
+  });
 </script>
 
 <style>
@@ -36,17 +50,15 @@
 
   @media only screen and (max-width: 600px) {
     section {
-        height: 55px;
+      height: 55px;
     }
   }
 </style>
 
-<svelte:window bind:innerWidth={windowWidth}></svelte:window>
+<svelte:window bind:innerWidth={windowWidth} />
 
 <div style="--columns: repeat({gridSize}, {gridColumnWidth} )">
   {#each { length: itemTotal } as gridItem, index}
     <section class:active={false} on:click={handleClick} />
   {/each}
 </div>
-
-<p>{numSelected}</p>
