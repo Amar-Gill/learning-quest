@@ -1,7 +1,12 @@
 <script>
   import FlexibleGrid from "../../components/FlexibleGrid.svelte";
-  import { onMount } from "svelte";
+  import { onMount, getContext } from "svelte";
   import { goto } from "@sapper/app";
+  import { User } from "sveltefire";
+
+  const db = getContext("firebase")
+    .getFirebase()
+    .firestore();
 
   let prompt;
 
@@ -12,6 +17,9 @@
   let selectedSolution;
 
   let numSelected;
+
+  let t;
+  let interval;
 
   const options = [
     {
@@ -101,6 +109,11 @@
     const backBtn = document.getElementById("back-btn") || null;
     backBtn && (backBtn.style.display = "none");
 
+    t = 0;
+    interval = setInterval(() => {
+      t += 1;
+    }, 1000);
+
     selectedOption = options[Math.floor(Math.random() * options.length)];
 
     drawingEnabled = true;
@@ -116,11 +129,31 @@
     numSelected = event.detail.numSelected;
   }
 
-  function handleAnswerSubmit(event) {
+  function handleAnswerSubmit(event, user) {
     if (numSelected == selectedSolution[1]) {
       prompt = "Right answer!";
       event.target.disabled = true;
       drawingEnabled = false;
+
+      db.collection("reports")
+        .doc(user.uid)
+        .set(
+          {
+            uid: user.uid,
+            // TODO - use cloud function to handle createdAt field:
+            // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
+            // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
+            lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+            completedGames: firebase.firestore.FieldValue.arrayUnion({
+              game: "Fractions",
+              time: t,
+              completedAt: firebase.firestore.Timestamp.fromDate(new Date())
+            })
+          },
+          { merge: true }
+        );
+
+      clearInterval(interval);
 
       const replayBtn = document.getElementById("replay-btn");
       replayBtn.style.display = "block";
@@ -198,25 +231,29 @@
 <svelte:head>
   <title>Fractions</title>
 </svelte:head>
+<User let:auth let:user>
+  <div>
+    <header>
+      <button id="back-btn" on:click={async () => await goto('/games')}>
+        Back to games
+      </button>
+      <h2>{prompt}</h2>
+      <button id="replay-btn" on:click|preventDefault={resetGame}>
+        Play again?
+      </button>
+    </header>
 
-<div>
-  <header>
-    <button id="back-btn" on:click={async () => await goto('/games')}>
-      Back to games
-    </button>
-    <h2>{prompt}</h2>
-    <button id="replay-btn" on:click|preventDefault={resetGame}>
-      Play again?
-    </button>
-  </header>
+    <FlexibleGrid
+      on:drawevent={handleDrawEvent}
+      gridSize={selectedOption.gridSize}
+      {drawingEnabled} />
+    <footer>
+      <button
+        id="answer-btn"
+        on:click|preventDefault={e => handleAnswerSubmit(e, user)}>
+        Submit Answer
+      </button>
+    </footer>
+  </div>
 
-  <FlexibleGrid
-    on:drawevent={handleDrawEvent}
-    gridSize={selectedOption.gridSize}
-    {drawingEnabled} />
-  <footer>
-    <button id="answer-btn" on:click|preventDefault={handleAnswerSubmit}>
-      Submit Answer
-    </button>
-  </footer>
-</div>
+</User>
