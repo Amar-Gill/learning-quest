@@ -1,40 +1,40 @@
 <script>
   // TODO make firestore collections for games and fetch in this file
+  import GameCard from "../../components/GameCard.svelte";
 </script>
 
 <style>
   div {
-    display: flex;
-    flex-direction: column;
+    overflow-y: scroll;
     height: 100%;
-    /* background-image: linear-gradient(darkslategray 10%, lightslategrey 40%, white 90%); */
-    padding-left: 2rem;
   }
 
-  a:link,
-  a:visited {
-    color: var(--comp-4);
+  h2 {
+    text-align: center;
   }
 
-  a:hover {
-    color: var(--hue-6);
+  section {
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
+    justify-content: center;
   }
 
-  a:active {
-    color: var(--comp-2);
-  }
-
-  @media only screen and (max-width: 600px) {
-      div {
-          padding-left: 0;
-      }
-  }
 </style>
 
 <div>
 
   <h2>Games</h2>
 
-  <a href="games/add" alt="add">Basic Addition</a>
-  <a href="games/fraction" alt="fractions">Fractions</a>
+  <section>
+    <GameCard
+      title="Basic Addition"
+      subtitle="Practice basic arithmetic by adding two randomly generated integers."
+      href="games/add" />
+    <GameCard
+      title="Fractions"
+      subtitle="Visualize fractions and percentages through colouring an interactive grid."
+      href="games/fraction" />
+  </section>
+
 </div>
