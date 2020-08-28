@@ -2,6 +2,7 @@
   import { onMount, tick, beforeUpdate, getContext } from "svelte";
   import { User, Doc } from "sveltefire";
   import ImageGrid from "../../components/ImageGrid.svelte";
+  import { goto } from "@sapper/app";
 
   const db = getContext("firebase")
     .getFirebase()
@@ -69,6 +70,10 @@
       const replayBtn = document.getElementById("replay-btn");
       replayBtn.style.display = "block";
 
+      // change back btn display to block to reveal it to user
+      const backBtn = document.getElementById("back-btn");
+      backBtn.style.display = "block";
+
       // change pop-up display to flex to reveal and maintain img proportions
       const popUp = document.getElementById("pop-up");
       popUp.style.display = "flex";
@@ -115,11 +120,15 @@
 
     // change replay btn display to none
     const replayBtn = document.getElementById("replay-btn") || null;
-    if (replayBtn) replayBtn.style.display = "none";
+    replayBtn && (replayBtn.style.display = "none");
+
+    // change back btn display to none
+    const backBtn = document.getElementById("back-btn") || null;
+    backBtn && (backBtn.style.display = "none");
 
     // change pop-up display to none to hide from user again
     const popUp = document.getElementById("pop-up") || null;
-    if (popUp) popUp.style.display = "none";
+    popUp && (popUp.style.display = "none");
 
     // re-enable answer buttons
     const answerBtnsCollection = document.getElementsByClassName("answer-btn");
@@ -161,12 +170,9 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
-    /* background-image: linear-gradient(darkslategray 10%, lightslategrey 40%, white 90%); */
   }
 
   #replay-btn {
-    position: fixed;
-    right: 1rem;
     display: none;
     font-size: 1.5rem;
     font-family: "Comic Sans MS";
@@ -174,6 +180,17 @@
     color: var(--text-1);
     background-color: var(--hue-1);
     width: 90px;
+    height: 90px;
+  }
+
+  #back-btn {
+    display: none;
+    font-size: 1.5rem;
+    font-family: "Comic Sans MS";
+    border-radius: 8px;
+    color: var(--text-1);
+    background-color: var(--hue-1);
+    width: 110px;
     height: 90px;
   }
 
@@ -190,18 +207,16 @@
     filter: grayscale(100%);
   }
 
-  h2,
-  h5 {
-    /* border: solid black 2px; */
-    text-align: center;
-    color: var(--text-1);
-    margin-bottom: 0rem;
+  header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 90px;
   }
 
-  h5 {
-    position: fixed;
-    font-weight: bold;
-    left: 7rem;
+  header h2 {
+    text-align: center;
+    margin: auto;
   }
 
   section {
@@ -263,14 +278,6 @@
       right: 0;
     }
 
-    aside img {
-      /* height: 6rem; */
-    }
-
-    h5 {
-      left: 1rem;
-    }
-
     #replay-btn {
       right: 0.5rem;
     }
@@ -283,13 +290,6 @@
 
 <User let:auth let:user>
   <!-- position: fixed  -->
-  <button type="button" id="replay-btn" on:click|preventDefault={replayGame}>
-    Play again?
-  </button>
-
-  <h5>
-    <time>{t}</time>
-  </h5>
 
   <aside id="pop-up">
     <h6>~ NICE WORK ~</h6>
@@ -298,19 +298,26 @@
   <!-- position != fixed  -->
 
   <div>
-    <h2>{prompt}</h2>
-
+    <header>
+      <button id="back-btn" on:click={async () => await goto('/games')}>
+        Back to games
+      </button>
+      <h2>{prompt}</h2>
+      <button id="replay-btn" on:click|preventDefault={replayGame}>
+        Play again?
+      </button>
+    </header>
     <ImageGrid
       numImages={a}
-      imageSource='/images/banana.png'
-      imageAlt='banana' />
+      imageSource="/images/banana.png"
+      imageAlt="banana" />
     <section>
       <img src="/images/plus-sign.png" alt="plus-sign" />
     </section>
     <ImageGrid
       numImages={b}
-      imageSource='/images/banana.png'
-      imageAlt='banana' />
+      imageSource="/images/banana.png"
+      imageAlt="banana" />
 
     <footer>
       {#each options as option}
