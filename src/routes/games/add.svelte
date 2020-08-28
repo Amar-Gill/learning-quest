@@ -278,7 +278,7 @@
 </style>
 
 <svelte:head>
-  <title>Add</title>
+  <title>Games | Addition</title>
 </svelte:head>
 
 <User let:auth let:user>

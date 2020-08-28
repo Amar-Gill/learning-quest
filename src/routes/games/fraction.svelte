@@ -229,8 +229,9 @@
 </style>
 
 <svelte:head>
-  <title>Fractions</title>
+  <title>Games | Fractions</title>
 </svelte:head>
+
 <User let:auth let:user>
   <div>
     <header>

@@ -46,7 +46,7 @@
 </style>
 
 <svelte:head>
-  <title>Activity</title>
+  <title>Learning Quest | Activity</title>
 </svelte:head>
 
 <User let:user let:auth>

@@ -32,6 +32,10 @@
   }
 </style>
 
+<svelte:head>
+  <title>Learning Quest | Home</title>
+</svelte:head>
+
 <User let:auth>
   <div>
 

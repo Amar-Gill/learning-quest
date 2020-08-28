@@ -22,6 +22,10 @@
 
 </style>
 
+<svelte:head>
+  <title>Learning Quest | Games</title>
+</svelte:head>
+
 <div>
 
   <h2>Games</h2>
