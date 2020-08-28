@@ -1,6 +1,5 @@
 <script>
   import { User } from "sveltefire";
-
 </script>
 
 <style>
@@ -18,7 +17,11 @@
     background-color: var(--text-1);
     font-size: 1.5rem;
     border-radius: 8px;
+    position: fixed;
     display: none;
+    bottom: 7rem;
+    width: 60vw;
+    margin-left: calc(20vw - 0.5rem);
   }
 
   @media only screen and (max-width: 600px) {
@@ -27,7 +30,7 @@
     }
 
     button {
-      display: inline-block;
+      display: block;
     }
   }
 </style>
@@ -61,7 +64,6 @@
       <a href="/activity" alt="activity link">activity</a>
       page to review your completed games and performance data.
     </p>
-
-    <button on:click|preventDefault={() => auth.signOut()}>Log Out</button>
   </div>
+    <button on:click|preventDefault={() => auth.signOut()}>Log Out</button>
 </User>
