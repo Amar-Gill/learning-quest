@@ -1,6 +1,14 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, getContext } from "svelte";
   import { goto } from "@sapper/app";
+  import { User } from "sveltefire";
+
+  const db = getContext("firebase")
+    .getFirebase()
+    .firestore();
+
+  let t;
+  let interval;
 
   let prompt;
   let amountPaid;
@@ -13,11 +21,27 @@
   function resetGame() {
     prompt = "Calculate the change to return!";
 
+    t = 0;
+    interval = setInterval(() => {
+      t += 1;
+    }, 1000);
+
     // recalculate new game info
     const options = [500, 1000, 1500, 2000];
     amountPaid = null;
     amountPaid = options[Math.floor(Math.random() * options.length)];
     centsChange = 0;
+
+    // enable increment and decrement buttons
+    const incrementBtns = document.querySelectorAll(".increment");
+    incrementBtns.forEach(btn => {
+      btn.removeAttribute("disabled");
+    });
+
+    const decrementBtns = document.querySelectorAll(".decrement");
+    decrementBtns.forEach(btn => {
+      btn.removeAttribute("disabled");
+    });
 
     // hide back btn and replay btn and re-enable answer btn
     const answerBtn = document.getElementById("answer-btn") || null;
@@ -30,7 +54,7 @@
     backBtn && (backBtn.style.display = "none");
   }
 
-  function submitAnswer(event) {
+  function submitAnswer(event, user) {
     if (centsChange === requiredChange) {
       //disable answer btn and update prompt
       event.target.disabled = true;
@@ -43,7 +67,36 @@
       const backBtn = document.getElementById("back-btn");
       backBtn.style.display = "block";
 
-      // disable buttons here
+      clearInterval(interval);
+
+      db.collection("reports")
+        .doc(user.uid)
+        .set(
+          {
+            uid: user.uid,
+            // TODO - use cloud function to handle createdAt field:
+            // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
+            // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
+            lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+            completedGames: firebase.firestore.FieldValue.arrayUnion({
+              game: "Calculating Change",
+              time: t,
+              completedAt: firebase.firestore.Timestamp.fromDate(new Date())
+            })
+          },
+          { merge: true }
+        );
+
+      // disable increment and decrement buttons
+      const incrementBtns = document.querySelectorAll(".increment");
+      incrementBtns.forEach(btn => {
+        btn.setAttribute("disabled", true);
+      });
+
+      const decrementBtns = document.querySelectorAll(".decrement");
+      decrementBtns.forEach(btn => {
+        btn.setAttribute("disabled", true);
+      });
     } else {
       prompt = "Incorrect amount. Calculate the change to return!";
     }
@@ -134,12 +187,12 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    margin-bottom: .75rem;
+    margin-bottom: 0.75rem;
   }
 
   article button {
     width: 105px;
-    height:35px;
+    height: 35px;
     font-size: 1rem;
     border-radius: 8px;
     /* color: white; */
@@ -154,7 +207,6 @@
   }
 
   @media only screen and (max-height: 700px) {
-
     article button {
       height: 30px;
     }
@@ -169,52 +221,54 @@
   <title>Games | Change</title>
 </svelte:head>
 
-<div>
-  <header>
-    <button id="back-btn" on:click={async () => await goto('/games')}>
-      Back to games
-    </button>
-    <h2>{prompt}</h2>
-    <button id="replay-btn" on:click|preventDefault={resetGame}>
-      Play again?
-    </button>
-  </header>
+<User let:user let:auth>
+  <div>
+    <header>
+      <button id="back-btn" on:click={async () => await goto('/games')}>
+        Back to games
+      </button>
+      <h2>{prompt}</h2>
+      <button id="replay-btn" on:click|preventDefault={resetGame}>
+        Play again?
+      </button>
+    </header>
 
-  <section>
+    <section>
 
-    <article>
-      <h3>Amount Paid: {`$${(amountPaid / 100).toFixed(2)}`}</h3>
+      <article>
+        <h3>Amount Paid: {`$${(amountPaid / 100).toFixed(2)}`}</h3>
 
-      <h3>Purchase Price: {`$${(purchasePrice / 100).toFixed(2)}`}</h3>
+        <h3>Purchase Price: {`$${(purchasePrice / 100).toFixed(2)}`}</h3>
 
-      <h3>Change: {`$${(centsChange / 100).toFixed(2)}`}</h3>
-    </article>
+        <h3>Change: {`$${(centsChange / 100).toFixed(2)}`}</h3>
+      </article>
 
-    <article>
+      <article>
 
-      {#each values as value}
-        <aside>
-          <button
-            class:increment={true}
-            on:click={e => (centsChange += parseInt(e.target.value))}
-            {value}>
-            + ${(value / 100).toFixed(2)}
-          </button>
-          <button
-            class:decrement={true}
-            on:click={e => (centsChange -= parseInt(e.target.value))}
-            {value}>
-            - ${(value / 100).toFixed(2)}
-          </button>
-        </aside>
-      {/each}
-    </article>
+        {#each values as value}
+          <aside>
+            <button
+              class:increment={true}
+              on:click={e => (centsChange += parseInt(e.target.value))}
+              {value}>
+              + ${(value / 100).toFixed(2)}
+            </button>
+            <button
+              class:decrement={true}
+              on:click={e => (centsChange -= parseInt(e.target.value))}
+              {value}>
+              - ${(value / 100).toFixed(2)}
+            </button>
+          </aside>
+        {/each}
+      </article>
 
-  </section>
+    </section>
 
-  <footer>
-    <button id="answer-btn" on:click={e => submitAnswer(e)}>
-      Submit Answer
-    </button>
-  </footer>
-</div>
+    <footer>
+      <button id="answer-btn" on:click={e => submitAnswer(e, user)}>
+        Submit Answer
+      </button>
+    </footer>
+  </div>
+</User>
