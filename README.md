@@ -9,3 +9,4 @@ Implements Firebase authentication and Cloud Firestore to record user progress.
 Available games:
 - Basic Addition
 - Fractions
+- Calculating Change
