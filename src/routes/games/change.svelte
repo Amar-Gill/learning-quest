@@ -34,7 +34,7 @@
     if (centsChange === requiredChange) {
       //disable answer btn and update prompt
       event.target.disabled = true;
-      prompt = "Correct answer!";
+      prompt = "Right answer!";
 
       // reveal back btn and replay btn
       const replayBtn = document.getElementById("replay-btn");
@@ -113,11 +113,61 @@
   section {
     width: 100%;
     display: grid;
-    gap: 1.75rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 450px));
     justify-content: center;
   }
+
+  article h3:last-child {
+    background-color: var(--text-1);
+    color: var(--hue-1);
+  }
+
+  article:last-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  article:last-child aside {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-bottom: .75rem;
+  }
+
+  article button {
+    width: 105px;
+    height:35px;
+    font-size: 1rem;
+    border-radius: 8px;
+    /* color: white; */
+  }
+
+  .increment {
+    background-color: lightgreen;
+  }
+
+  .decrement {
+    background-color: tomato;
+  }
+
+  @media only screen and (max-height: 700px) {
+
+    article button {
+      height: 30px;
+    }
+
+    #answer-btn:disabled {
+      display: none;
+    }
+  }
 </style>
+
+<svelte:head>
+  <title>Games | Change</title>
+</svelte:head>
 
 <div>
   <header>
@@ -145,11 +195,13 @@
       {#each values as value}
         <aside>
           <button
+            class:increment={true}
             on:click={e => (centsChange += parseInt(e.target.value))}
             {value}>
             + ${(value / 100).toFixed(2)}
           </button>
           <button
+            class:decrement={true}
             on:click={e => (centsChange -= parseInt(e.target.value))}
             {value}>
             - ${(value / 100).toFixed(2)}
