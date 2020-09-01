@@ -39,6 +39,10 @@
       title="Fractions"
       subtitle="Visualize fractions and percentages through colouring an interactive grid."
       href="games/fraction" />
+    <GameCard
+      title="Calculating Change"
+      subtitle="Practice calculating change for monetary transactions."
+      href="games/change" />
   </section>
 
 </div>
