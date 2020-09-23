@@ -2,7 +2,7 @@
   import { createEventDispatcher, onMount, afterUpdate } from "svelte";
   const dispatch = createEventDispatcher();
   export let gridSize;
-  export let drawingEnabled;
+  export let isGameActive;
 
   $: itemTotal = gridSize * gridSize;
 
@@ -10,16 +10,26 @@
 
   let windowWidth;
 
+  let drawing = false;
+
   $: gridColumnWidth = windowWidth < 600 ? "55px" : "75px";
 
-  const handleClick = function() {
-    if (drawingEnabled) {
-      this.classList.contains("active") ? numSelected-- : numSelected++;
-      this.classList.toggle("active");
+  const draw = function (e) {
+    if (isGameActive) {
+      console.log(e.target.classList);
+      console.log(e.target);
+      e.target.classList.contains("active") ? numSelected-- : numSelected++;
+      e.target.classList.toggle("active");
 
       dispatch("drawevent", {
-        numSelected
+        numSelected,
       });
+    }
+  };
+
+  const drawOnHover = function (e) {
+    if (drawing) {
+      draw(e);
     }
   };
 
@@ -27,7 +37,7 @@
     numSelected = 0;
 
     dispatch("drawevent", {
-      numSelected
+      numSelected,
     });
   });
 
@@ -35,10 +45,10 @@
     numSelected = 0;
 
     dispatch("drawevent", {
-      numSelected
+      numSelected,
     });
 
-    if (drawingEnabled) {
+    if (isGameActive) {
       const gridContainer = document.getElementById("grid-container");
 
       const nodes = gridContainer.childNodes;
@@ -77,10 +87,18 @@
 
 <svelte:window bind:innerWidth={windowWidth} />
 
+<!-- {@debug drawing} -->
+
 <div
   id="grid-container"
+  on:mousedown={() => (drawing = true)}
+  on:mouseup={() => (drawing = false)}
   style="--columns: repeat({gridSize}, {gridColumnWidth} )">
   {#each { length: itemTotal } as gridItem, index}
-    <section class:active={false} on:click={handleClick} />
+    <section
+      class:active={false}
+      on:mousedown={(e) => draw(e)}
+      on:mouseover={(e) => drawOnHover(e)} />
   {/each}
 </div>
+<p>drawing = {drawing}, numSelected = {numSelected}, isGameActive = {isGameActive}</p>

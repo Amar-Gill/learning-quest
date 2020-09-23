@@ -10,7 +10,7 @@
 
   let prompt;
 
-  let drawingEnabled;
+  let isGameActive;
 
   let selectedOption;
 
@@ -116,7 +116,7 @@
 
     selectedOption = options[Math.floor(Math.random() * options.length)];
 
-    drawingEnabled = true;
+    isGameActive = true;
 
     const solutions = Object.entries(selectedOption.solutionSpace);
 
@@ -133,7 +133,7 @@
     if (numSelected == selectedSolution[1]) {
       prompt = "Right answer!";
       event.target.disabled = true;
-      drawingEnabled = false;
+      isGameActive = false;
 
       db.collection("reports")
         .doc(user.uid)
@@ -247,7 +247,7 @@
     <FlexibleGrid
       on:drawevent={handleDrawEvent}
       gridSize={selectedOption.gridSize}
-      {drawingEnabled} />
+      {isGameActive} />
     <footer>
       <button
         id="answer-btn"
