@@ -1,52 +1,39 @@
 <script>
-  import { createEventDispatcher, onMount, afterUpdate } from "svelte";
+  import { createEventDispatcher, afterUpdate, beforeUpdate } from "svelte";
   const dispatch = createEventDispatcher();
   export let gridSize;
-  export let drawingEnabled;
+  export let isGameActive;
 
   $: itemTotal = gridSize * gridSize;
 
-  let numSelected;
+  let cells = [];
+  let temporaryDrawingState;
+
+  $: numSelected = cells.filter((c) => c).length;
 
   let windowWidth;
 
+  let drawing = false;
+
   $: gridColumnWidth = windowWidth < 600 ? "55px" : "75px";
 
-  const handleClick = function() {
-    if (drawingEnabled) {
-      this.classList.contains("active") ? numSelected-- : numSelected++;
-      this.classList.toggle("active");
-
-      dispatch("drawevent", {
-        numSelected
-      });
+  beforeUpdate(() => {
+    if (!isGameActive) {
+      temporaryDrawingState = cells;
+      cells = [];
     }
-  };
 
-  onMount(() => {
-    numSelected = 0;
-
-    dispatch("drawevent", {
-      numSelected
-    });
+    if (isGameActive && !cells.length) {
+      for (let i = 0; i < itemTotal; i++) {
+        cells[i] = false;
+      }
+    }
   });
 
   afterUpdate(() => {
-    numSelected = 0;
-
     dispatch("drawevent", {
-      numSelected
+      numSelected,
     });
-
-    if (drawingEnabled) {
-      const gridContainer = document.getElementById("grid-container");
-
-      const nodes = gridContainer.childNodes;
-
-      for (const node of nodes) {
-        node.classList.contains("active") && node.classList.toggle("active");
-      }
-    }
   });
 </script>
 
@@ -77,10 +64,22 @@
 
 <svelte:window bind:innerWidth={windowWidth} />
 
-<div
-  id="grid-container"
-  style="--columns: repeat({gridSize}, {gridColumnWidth} )">
-  {#each { length: itemTotal } as gridItem, index}
-    <section class:active={false} on:click={handleClick} />
-  {/each}
-</div>
+{#if isGameActive}
+  <div
+    on:mousedown={() => (drawing = true)}
+    on:mouseup={() => (drawing = false)}
+    style="--columns: repeat({gridSize}, {gridColumnWidth} )">
+    {#each cells as cell, index (index)}
+      <section
+        class:active={cells[index]}
+        on:mousedown={() => (cells[index] = !cells[index])}
+        on:mouseover={() => drawing && (cells[index] = !cells[index])} />
+    {/each}
+  </div>
+{:else}
+  <div style="--columns: repeat({gridSize}, {gridColumnWidth} )">
+    {#each temporaryDrawingState as cell, index (index)}
+      <section class:active={temporaryDrawingState[index]} />
+    {/each}
+  </div>
+{/if}
