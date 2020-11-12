@@ -1,7 +1,6 @@
 <script>
   import Nav from "../components/Nav.svelte";
-  import FirebaseAuthContainer from "../components/FirebaseAuthContainer.svelte";
-  import { FirebaseApp, User } from "sveltefire";
+  import { FirebaseApp } from "sveltefire";
 </script>
 
 <style>
@@ -29,15 +28,9 @@
 
 <!-- defaults to firebase={window.firebase} -->
 <FirebaseApp>
-  <User persist={sessionStorage} let:user let:auth on:user>
-    <Nav {auth} />
+  <Nav />
 
-    <main>
-      <slot />
-    </main>
-
-    <div slot="signed-out">
-      <FirebaseAuthContainer {auth} />
-    </div>
-  </User>
+  <main>
+    <slot />
+  </main>
 </FirebaseApp>
