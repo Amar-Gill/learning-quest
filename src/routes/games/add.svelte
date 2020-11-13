@@ -1,12 +1,13 @@
 <script>
   import { onMount, tick, beforeUpdate, getContext } from "svelte";
-  import { User, Doc } from "sveltefire";
   import ImageGrid from "../../components/ImageGrid.svelte";
   import { goto } from "@sapper/app";
 
-  const db = getContext("firebase")
-    .getFirebase()
-    .firestore();
+  const app = getContext("firebase").getFirebase();
+
+  const db = app.firestore();
+
+  const auth = app.auth();
 
   // initialize game prompt and clock for user
   let prompt;
@@ -41,28 +42,37 @@
     }
   }
 
-  // called when an answer is selected
-  function validateAnswer(e, user) {
-    if (e.target.value == answer) {
-      prompt = `${e.target.value} is correct!`;
+  function save() {
+    db.collection("reports")
+      .doc(auth.currentUser.uid)
+      .set(
+        {
+          uid: auth.currentUser.uid,
+          // TODO - use cloud function to handle createdAt field:
+          // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
+          // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
+          lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+          completedGames: firebase.firestore.FieldValue.arrayUnion({
+            game: "Basic Addition",
+            time: t,
+            completedAt: firebase.firestore.Timestamp.fromDate(new Date()),
+          }),
+        },
+        { merge: true }
+      );
+  }
 
-      db.collection("reports")
-        .doc(user.uid)
-        .set(
-          {
-            uid: user.uid,
-            // TODO - use cloud function to handle createdAt field:
-            // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
-            // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
-            lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
-            completedGames: firebase.firestore.FieldValue.arrayUnion({
-              game: "Basic Addition",
-              time: t,
-              completedAt: firebase.firestore.Timestamp.fromDate(new Date())
-            })
-          },
-          { merge: true }
-        );
+  // called when an answer is selected
+  function validateAnswer(e) {
+    if (e.target.value == answer) {
+      if (auth.currentUser != null) {
+        prompt = `${e.target.value} is correct!`;
+      } else {
+        prompt =
+          "Correct! <a href='/login' alt='login' style='color: #ffa600;'> Log In </a> to save your progress!";
+      }
+
+      auth.currentUser != null && save();
 
       clearInterval(interval);
 
@@ -83,7 +93,7 @@
         "answer-btn"
       );
       const answerBtns = [...answerBtnsCollection];
-      answerBtns.forEach(btn => {
+      answerBtns.forEach((btn) => {
         btn.setAttribute("disabled", true);
       });
     } else {
@@ -133,7 +143,7 @@
     // re-enable answer buttons
     const answerBtnsCollection = document.getElementsByClassName("answer-btn");
     const answerBtns = [...answerBtnsCollection];
-    answerBtns.forEach(btn => {
+    answerBtns.forEach((btn) => {
       btn.removeAttribute("disabled");
     });
 
@@ -288,45 +298,39 @@
   <title>Games | Addition</title>
 </svelte:head>
 
-<User let:auth let:user>
-  <!-- position: fixed  -->
+<!-- <User let:user> -->
+<!-- position: fixed  -->
 
-  <aside id="pop-up">
-    <h6>~ NICE WORK ~</h6>
-    <img src="/images/pbjt.gif" alt="gif" />
-  </aside>
-  <!-- position != fixed  -->
+<aside id="pop-up">
+  <h6>~ NICE WORK ~</h6>
+  <img src="/images/pbjt.gif" alt="gif" />
+</aside>
+<!-- position != fixed  -->
 
-  <div>
-    <header>
-      <button id="back-btn" on:click={async () => await goto('/games')}>
-        Back to games
-      </button>
-      <h2>{prompt}</h2>
-      <button id="replay-btn" on:click|preventDefault={replayGame}>
-        Play again?
-      </button>
-    </header>
-    <ImageGrid
-      numImages={a}
-      imageSource="/images/banana.png"
-      imageAlt="banana" />
-    <section>
-      <img src="/images/plus-sign.png" alt="plus-sign" />
-    </section>
-    <ImageGrid
-      numImages={b}
-      imageSource="/images/banana.png"
-      imageAlt="banana" />
+<div>
+  <header>
+    <button id="back-btn" on:click={async () => await goto('/games')}>
+      Back to games
+    </button>
+    <h2>
+      {@html prompt}
+    </h2>
+    <button id="replay-btn" on:click|preventDefault={replayGame}>
+      Play again?
+    </button>
+  </header>
+  <ImageGrid numImages={a} imageSource="/images/banana.png" imageAlt="banana" />
+  <section><img src="/images/plus-sign.png" alt="plus-sign" /></section>
+  <ImageGrid numImages={b} imageSource="/images/banana.png" imageAlt="banana" />
 
-    <footer>
-      {#each options as option}
-        <input
-          class="answer-btn"
-          type="button"
-          value={option}
-          on:click|preventDefault={e => validateAnswer(e, user)} />
-      {/each}
-    </footer>
-  </div>
-</User>
+  <footer>
+    {#each options as option}
+      <input
+        class="answer-btn"
+        type="button"
+        value={option}
+        on:click|preventDefault={(e) => validateAnswer(e)} />
+    {/each}
+  </footer>
+</div>
+<!-- </User> -->

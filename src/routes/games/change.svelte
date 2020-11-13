@@ -1,11 +1,10 @@
 <script>
   import { onMount, getContext } from "svelte";
   import { goto } from "@sapper/app";
-  import { User } from "sveltefire";
 
-  const db = getContext("firebase")
-    .getFirebase()
-    .firestore();
+  const app = getContext("firebase").getFirebase();
+  const db = app.firestore();
+  const auth = app.auth();
 
   let t;
   let interval;
@@ -34,12 +33,12 @@
 
     // enable increment and decrement buttons
     const incrementBtns = document.querySelectorAll(".increment");
-    incrementBtns.forEach(btn => {
+    incrementBtns.forEach((btn) => {
       btn.removeAttribute("disabled");
     });
 
     const decrementBtns = document.querySelectorAll(".decrement");
-    decrementBtns.forEach(btn => {
+    decrementBtns.forEach((btn) => {
       btn.removeAttribute("disabled");
     });
 
@@ -54,11 +53,37 @@
     backBtn && (backBtn.style.display = "none");
   }
 
-  function submitAnswer(event, user) {
+  function save() {
+    db.collection("reports")
+      .doc(auth.currentUser.uid)
+      .set(
+        {
+          uid: auth.currentUser.uid,
+          // TODO - use cloud function to handle createdAt field:
+          // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
+          // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
+          lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+          completedGames: firebase.firestore.FieldValue.arrayUnion({
+            game: "Calculating Change",
+            time: t,
+            completedAt: firebase.firestore.Timestamp.fromDate(new Date()),
+          }),
+        },
+        { merge: true }
+      );
+  }
+
+  function submitAnswer(event) {
     if (centsChange === requiredChange) {
       //disable answer btn and update prompt
       event.target.disabled = true;
-      prompt = "Right answer!";
+
+      if (auth.currentUser != null) {
+        prompt = "Right answer!";
+      } else {
+        prompt =
+          "Correct! <a href='/login' alt='login' style='color: #ffa600;'> Log In </a> to save your progress!";
+      }
 
       // reveal back btn and replay btn
       const replayBtn = document.getElementById("replay-btn");
@@ -69,32 +94,16 @@
 
       clearInterval(interval);
 
-      db.collection("reports")
-        .doc(user.uid)
-        .set(
-          {
-            uid: user.uid,
-            // TODO - use cloud function to handle createdAt field:
-            // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
-            // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
-            lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
-            completedGames: firebase.firestore.FieldValue.arrayUnion({
-              game: "Calculating Change",
-              time: t,
-              completedAt: firebase.firestore.Timestamp.fromDate(new Date())
-            })
-          },
-          { merge: true }
-        );
+      auth.currentUser != null && save();
 
       // disable increment and decrement buttons
       const incrementBtns = document.querySelectorAll(".increment");
-      incrementBtns.forEach(btn => {
+      incrementBtns.forEach((btn) => {
         btn.setAttribute("disabled", true);
       });
 
       const decrementBtns = document.querySelectorAll(".decrement");
-      decrementBtns.forEach(btn => {
+      decrementBtns.forEach((btn) => {
         btn.setAttribute("disabled", true);
       });
     } else {
@@ -221,54 +230,51 @@
   <title>Games | Change</title>
 </svelte:head>
 
-<User let:user let:auth>
-  <div>
-    <header>
-      <button id="back-btn" on:click={async () => await goto('/games')}>
-        Back to games
-      </button>
-      <h2>{prompt}</h2>
-      <button id="replay-btn" on:click|preventDefault={resetGame}>
-        Play again?
-      </button>
-    </header>
+<div>
+  <header>
+    <button id="back-btn" on:click={async () => await goto('/games')}>
+      Back to games
+    </button>
+    <h2>
+      {@html prompt}
+    </h2>
+    <button id="replay-btn" on:click|preventDefault={resetGame}>
+      Play again?
+    </button>
+  </header>
 
-    <section>
+  <section>
+    <article>
+      <h3>Amount Paid: {`$${(amountPaid / 100).toFixed(2)}`}</h3>
 
-      <article>
-        <h3>Amount Paid: {`$${(amountPaid / 100).toFixed(2)}`}</h3>
+      <h3>Purchase Price: {`$${(purchasePrice / 100).toFixed(2)}`}</h3>
 
-        <h3>Purchase Price: {`$${(purchasePrice / 100).toFixed(2)}`}</h3>
+      <h3>Change: {`$${(centsChange / 100).toFixed(2)}`}</h3>
+    </article>
 
-        <h3>Change: {`$${(centsChange / 100).toFixed(2)}`}</h3>
-      </article>
+    <article>
+      {#each values as value}
+        <aside>
+          <button
+            class:increment={true}
+            on:click={(e) => (centsChange += parseInt(e.target.value))}
+            {value}>
+            + ${(value / 100).toFixed(2)}
+          </button>
+          <button
+            class:decrement={true}
+            on:click={(e) => (centsChange -= parseInt(e.target.value))}
+            {value}>
+            - ${(value / 100).toFixed(2)}
+          </button>
+        </aside>
+      {/each}
+    </article>
+  </section>
 
-      <article>
-
-        {#each values as value}
-          <aside>
-            <button
-              class:increment={true}
-              on:click={e => (centsChange += parseInt(e.target.value))}
-              {value}>
-              + ${(value / 100).toFixed(2)}
-            </button>
-            <button
-              class:decrement={true}
-              on:click={e => (centsChange -= parseInt(e.target.value))}
-              {value}>
-              - ${(value / 100).toFixed(2)}
-            </button>
-          </aside>
-        {/each}
-      </article>
-
-    </section>
-
-    <footer>
-      <button id="answer-btn" on:click={e => submitAnswer(e, user)}>
-        Submit Answer
-      </button>
-    </footer>
-  </div>
-</User>
+  <footer>
+    <button id="answer-btn" on:click={(e) => submitAnswer(e)}>
+      Submit Answer
+    </button>
+  </footer>
+</div>
