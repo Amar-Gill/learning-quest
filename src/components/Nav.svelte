@@ -1,10 +1,6 @@
 <script>
-  export let auth;
-
-  let signOut = function() {
-    // sign out of firebase auth instance
-    auth.signOut().then(() => console.log("User signed out"));
-  };
+  import { User } from "sveltefire";
+  import { goto } from "@sapper/app";
 </script>
 
 <style>
@@ -85,20 +81,19 @@
 
   /* small screen */
   @media only screen and (max-width: 600px) {
+    nav {
+      bottom: 0;
+      width: 100vw;
+      height: 5rem;
+    }
 
-      nav {
-          bottom: 0;
-          width: 100vw;
-          height: 5rem;
-      }
+    ul {
+      flex-direction: row;
+    }
 
-      ul {
-          flex-direction: row;
-      }
-
-      li:last-child {
-        display: none;
-      }
+    li:last-child {
+      display: none;
+    }
   }
 
   /* large screen */
@@ -129,12 +124,8 @@
 
 <nav>
   <ul>
-
     <li>
-      <a href=".">
-        <i class="fas fa-house-user fa-3x" />
-        <span>home</span>
-      </a>
+      <a href="."> <i class="fas fa-house-user fa-3x" /> <span>home</span> </a>
     </li>
 
     <li>
@@ -152,9 +143,12 @@
     </li>
 
     <li>
-      <button on:click|preventDefault={signOut}>log-out</button>
+      <User persist={sessionStorage} let:auth>
+        <button on:click|preventDefault={() => auth.signOut()}>log-out</button>
+        <div slot="signed-out">
+          <button on:click={() => goto('/login')}>log-in</button>
+        </div>
+      </User>
     </li>
-
   </ul>
-
 </nav>

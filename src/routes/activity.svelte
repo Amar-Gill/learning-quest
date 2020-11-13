@@ -30,18 +30,19 @@
     width: calc(100% - 3px);
   }
 
-  a, a:visited {
-	  color: var(--comp-4);
+  a,
+  a:visited {
+    color: var(--comp-4);
   }
 
   @media only screen and (max-width: 834px) {
-	  div {
-		  padding-left: 0;
-	  }
+    div {
+      padding-left: 0;
+    }
 
-	  section {
-		  width: 100%;
-	  }
+    section {
+      width: 100%;
+    }
   }
 </style>
 
@@ -49,10 +50,10 @@
   <title>Learning Quest | Activity</title>
 </svelte:head>
 
-<User let:user let:auth>
-  <div>
-    <h2>User Activity</h2>
+<div>
+  <h2>User Activity</h2>
 
+  <User persist={sessionStorage} let:user let:auth>
     <h3>Game Reports</h3>
     <section>
       <Doc path={`reports/${user.uid}`} let:data let:ref>
@@ -74,6 +75,12 @@
         </span>
       </Doc>
     </section>
-
-  </div>
-</User>
+    <div slot="signed-out">
+      <p>
+        You are not authenticated.
+        <a href="/login" alt="login">Log in</a>
+        to save your progress.
+      </p>
+    </div>
+  </User>
+</div>

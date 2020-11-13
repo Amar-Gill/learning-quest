@@ -1,12 +1,11 @@
 <script>
   import FlexibleGrid from "../../components/FlexibleGrid.svelte";
-  import { onMount, getContext } from "svelte";
+  import { getContext } from "svelte";
   import { goto } from "@sapper/app";
-  import { User } from "sveltefire";
 
-  const db = getContext("firebase")
-    .getFirebase()
-    .firestore();
+  const app = getContext("firebase").getFirebase();
+  const db = app.firestore();
+  const auth = app.auth();
 
   let prompt;
 
@@ -29,8 +28,8 @@
         "one third": 3,
         "two thirds": 6,
         "1/3": 3,
-        "2/3": 6
-      }
+        "2/3": 6,
+      },
     },
     {
       gridSize: 4,
@@ -54,8 +53,8 @@
         "4/8": 8,
         "5/8": 10,
         "3/4": 12,
-        "7/8": 14
-      }
+        "7/8": 14,
+      },
     },
     {
       gridSize: 5,
@@ -72,8 +71,8 @@
         "1/5": 5,
         "2/5": 10,
         "3/5": 15,
-        "4/5": 20
-      }
+        "4/5": 20,
+      },
     },
     {
       gridSize: 6,
@@ -94,9 +93,9 @@
         "3/6": 18,
         "2/3": 24,
         "4/6": 24,
-        "5/6": 30
-      }
-    }
+        "5/6": 30,
+      },
+    },
   ];
 
   function resetGame() {
@@ -129,29 +128,38 @@
     numSelected = event.detail.numSelected;
   }
 
-  function handleAnswerSubmit(event, user) {
+  function save() {
+    db.collection("reports")
+      .doc(auth.currentUser.uid)
+      .set(
+        {
+          uid: auth.currentUser.uid,
+          // TODO - use cloud function to handle createdAt field:
+          // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
+          // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
+          lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
+          completedGames: firebase.firestore.FieldValue.arrayUnion({
+            game: "Fractions",
+            time: t,
+            completedAt: firebase.firestore.Timestamp.fromDate(new Date()),
+          }),
+        },
+        { merge: true }
+      );
+  };
+
+  function handleAnswerSubmit(event) {
     if (numSelected == selectedSolution[1]) {
-      prompt = "Right answer!";
+      if (auth.currentUser != null) {
+        prompt = "Right answer!";
+      } else {
+        prompt =
+          "Correct! <a href='/login' alt='login' style='color: #ffa600;'> Log In </a> to save your progress!";
+      }
       event.target.disabled = true;
       isGameActive = false;
 
-      db.collection("reports")
-        .doc(user.uid)
-        .set(
-          {
-            uid: user.uid,
-            // TODO - use cloud function to handle createdAt field:
-            // https://stackoverflow.com/questions/51656107/managing-createdat-timestamp-in-firestore
-            // createdAt: firebase.firestore.FieldValue || firebase.firestore.Timestamp.fromDate(new Date()),
-            lastActivity: firebase.firestore.Timestamp.fromDate(new Date()),
-            completedGames: firebase.firestore.FieldValue.arrayUnion({
-              game: "Fractions",
-              time: t,
-              completedAt: firebase.firestore.Timestamp.fromDate(new Date())
-            })
-          },
-          { merge: true }
-        );
+      auth.currentUser != null && save();
 
       clearInterval(interval);
 
@@ -232,29 +240,28 @@
   <title>Games | Fractions</title>
 </svelte:head>
 
-<User let:auth let:user>
-  <div>
-    <header>
-      <button id="back-btn" on:click={async () => await goto('/games')}>
-        Back to games
-      </button>
-      <h2>{prompt}</h2>
-      <button id="replay-btn" on:click|preventDefault={resetGame}>
-        Play again?
-      </button>
-    </header>
+<div>
+  <header>
+    <button id="back-btn" on:click={async () => await goto('/games')}>
+      Back to games
+    </button>
+    <h2>
+      {@html prompt}
+    </h2>
+    <button id="replay-btn" on:click|preventDefault={resetGame}>
+      Play again?
+    </button>
+  </header>
 
-    <FlexibleGrid
-      on:drawevent={handleDrawEvent}
-      gridSize={selectedOption.gridSize}
-      {isGameActive} />
-    <footer>
-      <button
-        id="answer-btn"
-        on:click|preventDefault={e => handleAnswerSubmit(e, user)}>
-        Submit Answer
-      </button>
-    </footer>
-  </div>
-
-</User>
+  <FlexibleGrid
+    on:drawevent={handleDrawEvent}
+    gridSize={selectedOption.gridSize}
+    {isGameActive} />
+  <footer>
+    <button
+      id="answer-btn"
+      on:click|preventDefault={(e) => handleAnswerSubmit(e)}>
+      Submit Answer
+    </button>
+  </footer>
+</div>

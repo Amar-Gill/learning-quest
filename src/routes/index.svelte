@@ -1,5 +1,6 @@
 <script>
   import { User } from "sveltefire";
+  import { goto } from "@sapper/app";
 </script>
 
 <style>
@@ -39,31 +40,32 @@
   <title>Learning Quest | Home</title>
 </svelte:head>
 
-<User let:auth>
-  <div>
+<div>
+  <h2>Learning Quest 0.1.0</h2>
 
-    <h2>Learning Quest 0.1.0</h2>
+  <p>
+    This is an online education platform for children between the ages of 5-10.
+  </p>
+  <p>
+    The learning happens through playing various games designed to teach
+    arithmetic and logic.
+  </p>
 
-    <p>
-      This is an online education platform for children between the ages of
-      5-10.
-    </p>
-    <p>
-      The learning happens through playing various games designed to teach
-      arithmetic and logic.
-    </p>
-
-    <h2>How to Play</h2>
-    <p>
-      Visit the
-      <a href="/games" alt="games link">games</a>
-      page to select from a list of available games.
-    </p>
-    <p>
-      Visit the
-      <a href="/activity" alt="activity link">activity</a>
-      page to review your completed games and performance data.
-    </p>
+  <h2>How to Play</h2>
+  <p>
+    Visit the
+    <a href="/games" alt="games link">games</a>
+    page to select from a list of available games.
+  </p>
+  <p>
+    Visit the
+    <a href="/activity" alt="activity link">activity</a>
+    page to review your completed games and performance data.
+  </p>
+</div>
+<User persist={sessionStorage} let:auth>
+  <button on:click|preventDefault={() => auth.signOut()}>Log Out</button>
+  <div slot="signed-out">
+    <button on:click={() => goto('/login')}>Log In</button>
   </div>
-    <button on:click|preventDefault={() => auth.signOut()}>Log Out</button>
 </User>

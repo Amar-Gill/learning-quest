@@ -4,7 +4,7 @@
 
   // FirebaseUI config.
   const uiConfig = {
-    // signInSuccessUrl: '/',
+    signInSuccessUrl: '/',
     signInOptions: [
       // Leave the lines as is for the providers you want to offer your users.
       {
