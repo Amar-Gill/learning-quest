@@ -141,14 +141,7 @@
         <span>games</span>
       </a>
     </li>
-    <li>
-      <User persist={sessionStorage} let:auth>
-        <button on:click|preventDefault={() => console.log(true)}>AUTH?</button>
-        <div slot="signed-out">
-          <button on:click={() => console.log(false)}>AUTH?</button>
-        </div>
-      </User>
-    </li>
+
     <li>
       <User persist={sessionStorage} let:auth>
         <button on:click|preventDefault={() => auth.signOut()}>log-out</button>
